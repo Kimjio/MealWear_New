@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="selContEducation" >
+        <item>서울</item><!--sen.go.kr-->
+        <item>부산</item><!--pen.go.kr-->
+        <item>대구</item><!--dge.go.kr-->
+        <item>인천</item><!--ice.go.kr-->
+        <item>광주</item><!--gen.go.kr-->
+        <item>대전</item><!--dje.go.kr-->
+        <item>울산</item><!--use.go.kr-->
+        <item>세종</item><!--sje.go.kr-->
+        <item>경기</item><!--goe.go.kr-->
+        <item>강원</item><!--kwe.go.kr-->
+        <item>충북</item><!--cbe.go.kr-->
+        <item>충남</item><!--cne.go.kr-->
+        <item>전북</item><!--jbe.go.kr-->
+        <item>전남</item><!--jne.go.kr-->
+        <item>경북</item><!--gbe.kr-->
+        <item>경남</item><!--gne.go.kr-->
+        <item>제주</item><!--jje.go.kr-->
+    </string-array>
+
+    <string-array name="contEducationUrls" >
+        <item>sen.go.kr</item>
+        <item>pen.go.kr</item>
+        <item>dge.go.kr</item>
+        <item>ice.go.kr</item>
+        <item>gen.go.kr</item>
+        <item>dje.go.kr</item>
+        <item>use.go.kr</item>
+        <item>sje.go.kr</item>
+        <item>goe.go.kr</item>
+        <item>kwe.go.kr</item>
+        <item>cbe.go.kr</item>
+        <item>cne.go.kr</item>
+        <item>jbe.go.kr</item>
+        <item>jne.go.kr</item>
+        <item>gbe.kr</item>
+        <item>gne.go.kr</item>
+        <item>jje.go.kr</item>
+    </string-array>
+
+    <string-array name="selSchoolNo" >
+        <item>유치원</item>
+        <item>초등학교</item>
+        <item>중학교</item>
+        <item>고등학교</item>
+    </string-array>
+
+</resources>
