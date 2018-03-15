@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/countryLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:clickable="true">
+    android:layout_marginRight="8dp">
 
     <ImageView
         android:id="@+id/openOnPhoneImageView"
@@ -16,10 +14,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
         android:background="@drawable/round_corner"
+        android:backgroundTint="@android:color/holo_blue_dark"
         android:clickable="true"
         android:contentDescription="@string/open_on_phone"
+        android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_open_on_phone"
         app:layout_constraintBottom_toBottomOf="parent"

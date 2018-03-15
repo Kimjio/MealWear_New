@@ -1,9 +1,10 @@
 package com.kimjio.mealwear.list;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.wear.widget.WearableRecyclerView;
+import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.AcceptDenyDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,7 @@ public class SchoolSelectRecyclerAdapter extends WearableRecyclerView.Adapter<We
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
 
-    private Activity activity;
+    private WearableActivity wearableActivity;
 
     @Override
     public int getItemViewType(int position) {
@@ -45,13 +46,14 @@ public class SchoolSelectRecyclerAdapter extends WearableRecyclerView.Adapter<We
         return position == schoolListDataArraySelectList.size() + 1;
     }
 
-    public SchoolSelectRecyclerAdapter(ArrayList<SchoolSelectListData> items, Activity activity) {
+    public SchoolSelectRecyclerAdapter(ArrayList<SchoolSelectListData> items, WearableActivity wearableActivity) {
         this.schoolListDataArraySelectList = items;
-        this.activity = activity;
+        this.wearableActivity = wearableActivity;
     }
 
+    @NonNull
     @Override
-    public WearableRecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public WearableRecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         if (viewType == TYPE_HEADER) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false);
             return new HeaderViewHolder(v);
@@ -63,7 +65,7 @@ public class SchoolSelectRecyclerAdapter extends WearableRecyclerView.Adapter<We
             return new SchoolSelectListViewHolder(view);
         }
 
-        return null;
+        return new HeaderViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_item, viewGroup, false));
     }
 
     private SchoolSelectListData getItem(int position) {
@@ -71,14 +73,14 @@ public class SchoolSelectRecyclerAdapter extends WearableRecyclerView.Adapter<We
     }
 
     @Override
-    public void onBindViewHolder(WearableRecyclerView.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull WearableRecyclerView.ViewHolder viewHolder, final int position) {
         if (viewHolder instanceof SchoolSelectListViewHolder) {
             SchoolSelectListViewHolder schoolSelectListViewHolder = (SchoolSelectListViewHolder) viewHolder;
             final SchoolSelectListData item = getItem(position - 1);
             View.OnClickListener view = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final AcceptDenyDialog acceptDenyDialog = new AcceptDenyDialog(activity);
+                    final AcceptDenyDialog acceptDenyDialog = new AcceptDenyDialog(wearableActivity);
                     acceptDenyDialog.setNegativeButton(new AcceptDenyDialog.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -87,13 +89,13 @@ public class SchoolSelectRecyclerAdapter extends WearableRecyclerView.Adapter<We
                     acceptDenyDialog.setPositiveButton(new AcceptDenyDialog.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Preference preference = new Preference(activity);
+                            Preference preference = new Preference(wearableActivity);
                             preference.putString("CountryCode", item.getCountryUrl());
                             preference.putString("schulCode", item.getOrgCode());
                             preference.putString("schulKndScCode", item.getSchulKndScCode());
                             preference.putString("schulCrseScCode", item.getSchulCrseScCode());
-                            activity.setResult(Activity.RESULT_OK, new Intent());
-                            activity.finish();
+                            wearableActivity.setResult(WearableActivity.RESULT_OK, new Intent());
+                            wearableActivity.finish();
                         }
                     });
                     acceptDenyDialog.setTitle(item.getSchoolName());

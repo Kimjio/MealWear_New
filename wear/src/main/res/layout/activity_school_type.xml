@@ -4,6 +4,7 @@
     android:id="@+id/schoolTypeRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     android:scrollbars="vertical"
     tools:context="com.kimjio.mealwear.type.SchoolTypeActivity"
     tools:listitem="@layout/row_school_type" />

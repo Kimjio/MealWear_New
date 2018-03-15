@@ -6,16 +6,13 @@ import android.preference.PreferenceManager;
 
 public class Preference {
     private SharedPreferences mPref;
-    private SharedPreferences.Editor mEditor;
 
     public Preference(Context mContext) {
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mEditor = mPref.edit();
     }
 
     public Preference(Context mContext, String prefName) {
         mPref = mContext.getSharedPreferences(prefName, 0);
-        mEditor = mPref.edit();
     }
 
     public boolean getBoolean(String key, boolean defValue) {
@@ -31,22 +28,22 @@ public class Preference {
     }
 
     public void putBoolean(String key, boolean value) {
-        mEditor.putBoolean(key, value).commit();
+        mPref.edit().putBoolean(key, value).apply();
     }
 
     public void putInt(String key, int value) {
-        mEditor.putInt(key, value).commit();
+        mPref.edit().putInt(key, value).apply();
     }
 
     public void putString(String key, String value) {
-        mEditor.putString(key, value).commit();
+        mPref.edit().putString(key, value).apply();
     }
 
     public void clear() {
-        mEditor.clear().commit();
+        mPref.edit().clear().apply();
     }
 
     public void remove(String key) {
-        mEditor.remove(key).commit();
+        mPref.edit().remove(key).apply();
     }
 }

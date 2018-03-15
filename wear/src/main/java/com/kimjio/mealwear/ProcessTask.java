@@ -1,17 +1,26 @@
 package com.kimjio.mealwear;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
 
-import toast.library.meal.MealLibrary;
+import org.hyunjun.school.School;
+import org.hyunjun.school.SchoolException;
+import org.hyunjun.school.SchoolMenu;
+import org.hyunjun.school.SchoolSchedule;
 
-/**
- * Created by whdghks913 on 2015-02-17.
- */
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
 public abstract class ProcessTask extends AsyncTask<Integer, Integer, Boolean> {
 
-    private Preference mPref;
+    private Preference preference;
+
+    @SuppressLint("StaticFieldLeak")
+    private Context context;
 
     public abstract void onPreDownload();
 
@@ -19,8 +28,9 @@ public abstract class ProcessTask extends AsyncTask<Integer, Integer, Boolean> {
 
     public abstract void onFinish(boolean result);
 
-    public ProcessTask(Context mContext) {
-        this.mPref = new Preference(mContext);
+    public ProcessTask(Context context) {
+        this.preference = new Preference(context);
+        this.context = context;
     }
 
     @Override
@@ -36,61 +46,118 @@ public abstract class ProcessTask extends AsyncTask<Integer, Integer, Boolean> {
      */
     @Override
     protected Boolean doInBackground(Integer... params) {
-        publishProgress(5);
+        updateUpProgress(0, 24, 25);
+        final String CountryCode = preference.getString("CountryCode", "");
+        final String schulCode = preference.getString("schulCode", "");
+        publishProgress(25);
+        final String schulCrseScCode = preference.getString("schulCrseScCode", "");
+        final String schulKndScCode = preference.getString("schulKndScCode", "");
 
-        final String CountryCode = mPref.getString("CountryCode", "");
-        final String schulCode = mPref.getString("schulCode", "");
-        final String schulCrseScCode= mPref.getString("schulCrseScCode", "");
-        final String schulKndScCode = mPref.getString("schulKndScCode", "");
+        int year = params[0];
+        int month = params[1];
+        int day = params[2];
 
-        /*final String CountryCode = "dge.go.kr"; // 접속 할 교육청 도메인
-        final String schulCode = "D100000282"; // 학교 고유 코드
-        final String schulCrseScCode = "4"; // 학교 종류 코드 1
-        final String schulKndScCode = "04"; // 학교 종류 코드 2*/
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
 
-        final String year = Integer.toString(params[0]);
-        String month = Integer.toString(params[1] + 1);
-        String day = Integer.toString(params[2]);
-
-        if (month.length() <= 1)
-            month = "0" + month;
-        if (day.length() <= 1)
-            day = "0" + day;
+        updateUpProgress(25, 34, 45);
 
         publishProgress(35);
+        updateUpProgress(35, 39, 75);
 
         try {
-            String[] Calender = MealLibrary.getDateNew(CountryCode, schulCode,
-                    schulCrseScCode, schulKndScCode, "1", year, month, day);
+            School api = new School(SchoolConverter.IntToType(Integer.parseInt(preference.getString("schulCrseScCode", ""))),
+                    SchoolConverter.IntToRegion(preference.getInt("schoolCountryID", -1)),
+                    preference.getString("schulCode", ""));
+            publishProgress(40);
 
-            publishProgress(50);
+            updateUpProgress(40, 45, 50);
+            List<SchoolMenu> menu = api.getMonthlyMenu(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+            publishProgress(46);
+            List<SchoolSchedule> schedule = api.getMonthlySchedule(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+            publishProgress(47);
+            for (int index = 47; index <= 55; index++) {
+                publishProgress(index);
+                SystemClock.sleep(60);
+            }
+            int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-            String[] Breakfast = MealLibrary.getMealNew(CountryCode, schulCode,
-                    schulCrseScCode, schulKndScCode, "1", year, month, day);
+            String[] Breakfast = new String[maxDay];
+            publishProgress(56);
+            String[] Lunch = new String[maxDay];
+            publishProgress(57);
+            String[] Dinner = new String[maxDay];
+            publishProgress(58);
+            String[] Schedule = new String[maxDay];
+            publishProgress(59);
 
-            publishProgress(60);
+            for (int i = 0; i < menu.size(); i++) {
+                Breakfast[i] = menu.get(i).breakfast;
+                Lunch[i] = menu.get(i).lunch;
+                Dinner[i] = menu.get(i).dinner;
+                Schedule[i] = schedule.get(i).schedule;
+            }
+            updateUpProgress(60, 75, 25);
+            String[] Calender = getCalenderList(year, month, day);
+            updateUpProgress(75, 100, 25);
 
-            String[] Lunch = MealLibrary.getMealNew(CountryCode, schulCode,
-                    schulCrseScCode, schulKndScCode, "2", year, month, day);
-
-            publishProgress(75);
-
-            String[] Dinner = MealLibrary.getMealNew(CountryCode, schulCode,
-                    schulCrseScCode, schulKndScCode, "3", year, month, day);
-
-            //BapTool.saveBapData(mContext, Calender, Breakfast, Lunch, Dinner);
-
+            BapTool.saveBapData(context, Calender, Breakfast, Lunch, Dinner);
+            ScheduleTool.saveScheduleData(context, Calender, Schedule);
             publishProgress(100);
 
-
-        } catch (Exception e) {
-            Log.e("ProcessTask Error", "Message : " + e.getMessage());
-            Log.e("ProcessTask Error", "LocalizedMessage : " + e.getLocalizedMessage());
+        } catch (SchoolException e) {
+            Log.w("ProcessTask Error", e.getMessage());
 
             e.printStackTrace();
             return false;
         }
         return true;
+    }
+
+    private String[] getCalenderList(int year, int month, int day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int minDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH);
+
+        String[] Calender = new String[maxDay];
+
+        for (int i = minDay - 1; i <= maxDay - 1; i++) {
+            String DayOfWeek = "";
+            calendar.set(year, month, i + 1);
+            switch (calendar.get(Calendar.DAY_OF_WEEK)) {
+                case 1:
+                    DayOfWeek = "일";
+                    break;
+                case 2:
+                    DayOfWeek = "월";
+                    break;
+                case 3:
+                    DayOfWeek = "화";
+                    break;
+                case 4:
+                    DayOfWeek = "수";
+                    break;
+                case 5:
+                    DayOfWeek = "목";
+                    break;
+                case 6:
+                    DayOfWeek = "금";
+                    break;
+                case 7:
+                    DayOfWeek = "토";
+                    break;
+            }
+            Calender[i] = Integer.toString(year) + String.format(Locale.KOREA, ".%02d", month + 1) + String.format(Locale.KOREA, ".%02d", i + 1) + "(" + DayOfWeek + ")";
+        }
+        return Calender;
+    }
+
+    private void updateUpProgress(int before, int afther, int speed) {
+        for (int index = before; index <= afther; index++) {
+            publishProgress(index);
+            SystemClock.sleep(speed);
+        }
     }
 
     @Override
@@ -101,7 +168,6 @@ public abstract class ProcessTask extends AsyncTask<Integer, Integer, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
-
         onFinish(result);
     }
 }

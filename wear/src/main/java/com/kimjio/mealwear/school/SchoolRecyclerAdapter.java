@@ -1,17 +1,18 @@
 package com.kimjio.mealwear.school;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.WearableRecyclerView;
 import android.support.wearable.activity.ConfirmationActivity;
-import android.util.Log;
+import android.support.wearable.activity.WearableActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kimjio.mealwear.Preference;
 import com.kimjio.mealwear.R;
@@ -19,8 +20,6 @@ import com.kimjio.mealwear.country.CountrySelectActivity;
 import com.kimjio.mealwear.list.SchoolSelectListActivity;
 import com.kimjio.mealwear.meal.MealActivity;
 import com.kimjio.mealwear.type.SchoolTypeActivity;
-
-import org.hyunjun.school.School;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,7 @@ import static com.kimjio.mealwear.school.SchoolSelectActivity.REQUEST_SCHOOL_TYP
 
 public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<WearableRecyclerView.ViewHolder> {
 
-    private Activity activity;
+    private WearableActivity wearableActivity;
 
     private String schoolCountry;
     private int schoolType;
@@ -54,8 +53,8 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
     private static final int TYPE_FOOTER = 6;
     private static final int TYPE_ITEM = 7;
 
-    public SchoolRecyclerAdapter(Activity activity) {
-        this.activity = activity;
+    public SchoolRecyclerAdapter(WearableActivity wearableActivity) {
+        this.wearableActivity = wearableActivity;
     }
 
     @Override
@@ -78,8 +77,9 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
         return TYPE_ITEM;
     }
 
+    @NonNull
     @Override
-    public WearableRecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public WearableRecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         if (viewType == TYPE_HEADER) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_title_item, viewGroup, false);
             return new HeaderViewHolder(view);
@@ -102,16 +102,17 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_school_search_button, viewGroup, false);
             return new SearchButtonViewHolder(view);
         }
-        return null;
+
+        return new HeaderViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.header_title_item, viewGroup, false));
     }
 
     @Override
-    public void onBindViewHolder(WearableRecyclerView.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull WearableRecyclerView.ViewHolder viewHolder, final int position) {
         if (viewHolder instanceof CountryButtonViewHolder) {
             View.OnClickListener view = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    activity.startActivityForResult(new Intent(activity, CountrySelectActivity.class), REQUEST_COUNTRY);
+                    wearableActivity.startActivityForResult(new Intent(wearableActivity, CountrySelectActivity.class), REQUEST_COUNTRY);
                 }
             };
             CountryButtonViewHolder countryButtonViewHolder = (CountryButtonViewHolder) viewHolder;
@@ -123,7 +124,7 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
             View.OnClickListener view = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    activity.startActivityForResult(new Intent(activity, SchoolTypeActivity.class), REQUEST_SCHOOL_TYPE);
+                    wearableActivity.startActivityForResult(new Intent(wearableActivity, SchoolTypeActivity.class), REQUEST_SCHOOL_TYPE);
                 }
             };
             TypeButtonViewHolder typeButtonViewHolder = (TypeButtonViewHolder) viewHolder;
@@ -138,7 +139,7 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
             View.OnClickListener view = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    activity.startActivity(new Intent(activity, ConfirmationActivity.class).putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.OPEN_ON_PHONE_ANIMATION).putExtra(ConfirmationActivity.EXTRA_MESSAGE, "휴대전화에서 확인"));
+                    wearableActivity.startActivity(new Intent(wearableActivity, ConfirmationActivity.class).putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.OPEN_ON_PHONE_ANIMATION).putExtra(ConfirmationActivity.EXTRA_MESSAGE, "휴대전화에서 확인"));
                 }
             };
             OpenOnPhoneButtonViewHolder openOnPhoneButtonViewHolder = (OpenOnPhoneButtonViewHolder) viewHolder;
@@ -149,7 +150,11 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
             View.OnClickListener view = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    activity.startActivityForResult(new Intent(activity, SchoolSelectListActivity.class).putExtra("schoolName", editText.getText().toString()).putExtra("schoolType", schoolType).putExtra("schoolCountry", schoolCountry), REQUEST_SCHOOL_SELECT);
+                    if (editText.getText().toString().isEmpty() || schoolType == -1 || schoolCountry.isEmpty()) {
+                        Toast.makeText(wearableActivity, "모든 항목이 입력되지 않음", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    wearableActivity.startActivityForResult(new Intent(wearableActivity, SchoolSelectListActivity.class).putExtra("schoolName", editText.getText().toString()).putExtra("schoolType", schoolType).putExtra("schoolCountry", schoolCountry), REQUEST_SCHOOL_SELECT);
                 }
             };
             SearchButtonViewHolder searchButtonViewHolder = (SearchButtonViewHolder) viewHolder;
@@ -167,14 +172,14 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
         if (requestCode == REQUEST_COUNTRY) {
             if (resultCode == RESULT_OK) {
                 schoolCountryID = intent.getIntExtra("schoolCountryID", -1);
-                new Preference(activity).putInt("schoolCountryID", schoolCountryID);
-                ArrayList<String> countryList = new ArrayList<>(Arrays.asList(activity.getResources().getStringArray(R.array.selContEducation)));
+                new Preference(wearableActivity).putInt("schoolCountryID", schoolCountryID);
+                ArrayList<String> countryList = new ArrayList<>(Arrays.asList(wearableActivity.getResources().getStringArray(R.array.selContEducation)));
                 for (int i = 0; i < countryList.size(); i++) {
                     if (schoolCountryID == i) {
                         countryTextView.setText(countryList.get(i));
                     }
                 }
-                ArrayList<String> countryListUrls = new ArrayList<>(Arrays.asList(activity.getResources().getStringArray(R.array.contEducationUrls)));
+                ArrayList<String> countryListUrls = new ArrayList<>(Arrays.asList(wearableActivity.getResources().getStringArray(R.array.contEducationUrls)));
                 for (int i = 0; i < countryListUrls.size(); i++) {
                     if (schoolCountryID == i) {
                         schoolCountry = countryListUrls.get(i);
@@ -184,7 +189,7 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
         } else if (requestCode == REQUEST_SCHOOL_TYPE) {
             if (resultCode == RESULT_OK) {
                 schoolType = intent.getIntExtra("schoolTypeID", -1);
-                ArrayList<String> schoolTypeList = new ArrayList<>(Arrays.asList(activity.getResources().getStringArray(R.array.selSchoolNo)));
+                ArrayList<String> schoolTypeList = new ArrayList<>(Arrays.asList(wearableActivity.getResources().getStringArray(R.array.selSchoolNo)));
                 for (int i = 0; i < schoolTypeList.size(); i++) {
                     if (schoolType - 1 == i) {
                         schoolTypeTextView.setText(schoolTypeList.get(i));
@@ -193,8 +198,8 @@ public class SchoolRecyclerAdapter extends WearableRecyclerView.Adapter<Wearable
             }
         } else if (requestCode == REQUEST_SCHOOL_SELECT) {
             if (resultCode == RESULT_OK) {
-                activity.startActivity(new Intent(activity, MealActivity.class));
-                activity.finish();
+                wearableActivity.startActivity(new Intent(wearableActivity, MealActivity.class).putExtra("needUpdate", true));
+                wearableActivity.finish();
             }
         }
     }

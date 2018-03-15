@@ -1,21 +1,19 @@
 package com.kimjio.mealwear.type;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.wear.widget.WearableLinearLayoutManager;
 import android.support.wear.widget.WearableRecyclerView;
+import android.support.wearable.activity.WearableActivity;
 
 import com.kimjio.mealwear.R;
-import com.kimjio.mealwear.country.CountryListData;
-import com.kimjio.mealwear.country.CountryRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SchoolTypeActivity extends Activity {
+public class SchoolTypeActivity extends WearableActivity {
     WearableRecyclerView recyclerView;
 
     @Override

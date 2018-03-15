@@ -1,25 +1,19 @@
 package com.kimjio.mealwear.country;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.wear.widget.WearableLinearLayoutManager;
 import android.support.wear.widget.WearableRecyclerView;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.support.wearable.activity.WearableActivity;
 
 import com.kimjio.mealwear.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-
-public class CountrySelectActivity extends Activity {
+public class CountrySelectActivity extends WearableActivity {
     WearableRecyclerView recyclerView;
 
     @Override
@@ -38,12 +32,12 @@ public class CountrySelectActivity extends Activity {
         snapHelper.attachToRecyclerView(recyclerView);
     }
 
-    public ArrayList<CountryListData> getListItems (ArrayList<String> arrayList) {
-        ArrayList<CountryListData> countryListDataArrayList = new ArrayList<> ();
+    public ArrayList<CountryListData> getListItems(ArrayList<String> arrayList) {
+        ArrayList<CountryListData> countryListDataArrayList = new ArrayList<>();
         for (int i = 0; i < arrayList.size(); i++) {
             CountryListData countryListData = new CountryListData();
             countryListData.setCountryName(arrayList.get(i));
-            countryListDataArrayList.add (countryListData);
+            countryListDataArrayList.add(countryListData);
         }
         return countryListDataArrayList;
     }

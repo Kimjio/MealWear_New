@@ -2,19 +2,14 @@ package com.kimjio.mealwear;
 
 import android.content.Context;
 
-import org.hyunjun.school.School;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import toast.library.meal.MealLibrary;
-
 /**
  * Created by whdghks913 on 2015-02-17.
  */
-@Deprecated
 public class BapTool {
     public static final String BAP_PREFERENCE_NAME = "bap_datas";
     public static final int TYPE_BREAKFAST = 0;
@@ -24,8 +19,8 @@ public class BapTool {
     public static String getBapStringFormat(int year, int month, int day, int type) {
         /**
          * Format : year-month-day-TYPE
+         * Calendar의 month는 1이 부족하므로 1을 더해줌
          */
-        // Calendar의 month는 1이 부족하므로 1을 더해줌
         month += 1;
         return year + "-" + month + "-" + day + "-" + type;
     }
@@ -46,19 +41,19 @@ public class BapTool {
 
                 int year = mDate.get(Calendar.YEAR);
                 int month = mDate.get(Calendar.MONTH);
-                int day = mDate.get(Calendar.DAY_OF_MONTH);
+                //int day = mDate.get(Calendar.DAY_OF_MONTH);
 
-                String mPrefBreakfastName = getBapStringFormat(year, month, day, TYPE_BREAKFAST);
-                String mPrefLunchName = getBapStringFormat(year, month, day, TYPE_LUNCH);
-                String mPrefDinnerName = getBapStringFormat(year, month, day, TYPE_DINNER);
+                String mPrefBreakfastName = getBapStringFormat(year, month, index + 1, TYPE_BREAKFAST);
+                String mPrefLunchName = getBapStringFormat(year, month, index + 1, TYPE_LUNCH);
+                String mPrefDinnerName = getBapStringFormat(year, month, index + 1, TYPE_DINNER);
 
-                String mBreakfast = Breakfast[index];
-                String mLunch = Lunch[index];
-                String mDinner = Dinner[index];
+                String mBreakfast = replaceString(Breakfast[index]);
+                String mLunch = replaceString(Lunch[index]);
+                String mDinner = replaceString(Dinner[index]);
 
-                if (!MealLibrary.isMealCheck(mBreakfast)) mBreakfast = "";
-                if (!MealLibrary.isMealCheck(mLunch)) mLunch = "";
-                if (!MealLibrary.isMealCheck(mDinner)) mDinner = "";
+                if (isMealNotEmpty(mBreakfast)) mBreakfast = "";
+                if (isMealNotEmpty(mLunch)) mLunch = "";
+                if (isMealNotEmpty(mDinner)) mDinner = "";
 
                 mPref.putString(mPrefBreakfastName, mBreakfast);
                 mPref.putString(mPrefLunchName, mLunch);
@@ -70,8 +65,12 @@ public class BapTool {
         }
     }
 
+    public static boolean isMealNotEmpty(String meal) {
+        return ("".equals(meal) || " ".equals(meal) || meal == null);
+    }
+
     /**
-     * Format : 2015-2-11-2
+     * Format : 2018-3-15
      */
     public static restoreBapDateClass restoreBapData(Context mContext, int year, int month, int day) {
         Preference mPref = new Preference(mContext, BAP_PREFERENCE_NAME);
@@ -114,15 +113,11 @@ public class BapTool {
         public boolean isBlankDay = false;
     }
 
-    public static String replaceAndCheckString(String mString) {
-        String[] mTrash = {"0", "1", "2" , "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "."};
+    public static String replaceString(String mString) {
+        String[] mTrash = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", ".", "amp;"};
         for (String e : mTrash) {
             mString = mString.replace(e, "");
         }
-        if (! mString.equals("")) {
-            return mString;
-        } else {
-            return  "급식이 없습니다";
-        }
+        return mString;
     }
 }

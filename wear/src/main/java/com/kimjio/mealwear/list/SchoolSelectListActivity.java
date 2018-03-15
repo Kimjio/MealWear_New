@@ -1,8 +1,6 @@
 package com.kimjio.mealwear.list;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearSnapHelper;
@@ -10,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.wear.widget.WearableLinearLayoutManager;
 import android.support.wearable.activity.ConfirmationActivity;
+import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 
 import com.kimjio.mealwear.R;
@@ -25,7 +24,7 @@ import org.json.simple.parser.ParseException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class SchoolSelectListActivity extends Activity {
+public class SchoolSelectListActivity extends WearableActivity {
     private RecyclerView recyclerView;
     ArrayList<SchoolSelectListData> schoolListDataArraySelectList = new ArrayList<>();
     int schoolType;
@@ -71,9 +70,11 @@ public class SchoolSelectListActivity extends Activity {
         //목록 초기화
         schoolListDataArraySelectList.clear();
         //TODO
-        String searchUrl = "http://par." + schoolCountry + "/spr_ccm_cm01_100.do?kraOrgNm=" + schoolName;
+        String searchUrl = "https://par." + schoolCountry + "/spr_ccm_cm01_100.do?kraOrgNm=" + schoolName;
 
         try {
+
+            Log.e("TAGE", getHtmlToText(searchUrl));
 
             JSONParser jsonParser = new JSONParser();
 
@@ -86,16 +87,6 @@ public class SchoolSelectListActivity extends Activity {
             JSONObject dataObject = (JSONObject) resultObject.get("data");
 
             JSONArray schoolInfoArray = (JSONArray) dataObject.get("orgDVOList");
-            //아무것도 없을 경우, 새로고침 후 끝내기
-            /*if (schoolInfoArray.size() == 0) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                return;
-            }*/
 
             //목록 끝까지 반복
             for (int i = 0; i < schoolInfoArray.size(); i++) {

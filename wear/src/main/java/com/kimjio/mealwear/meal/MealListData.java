@@ -1,15 +1,26 @@
 package com.kimjio.mealwear.meal;
 
-import android.graphics.drawable.Drawable;
-
 /**
  * Created by kimji on 2017-10-14.
  */
 
 public class MealListData {
-    public String mealBreakfastText;
-    public String mealLunchText;
-    public String mealDinnerText;
+    private int type;
+
+    private String mealBreakfastText;
+
+    private String mealLunchText;
+
+    private String mealDinnerText;
+
+    public MealListData(int type) {
+        if (!(type >= 0 && type <= 2)) throw new IllegalArgumentException("Type is not 0 ~ 2");
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
 
     public String getMealBreakfastText() {
         return mealBreakfastText;

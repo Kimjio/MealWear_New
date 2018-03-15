@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:clickable="true">
+    android:layout_marginRight="8dp">
 
     <ImageView
         android:id="@+id/schoolListImageView"
@@ -20,6 +19,7 @@
         android:backgroundTint="@android:color/holo_purple"
         android:clickable="true"
         android:contentDescription="@string/country"
+        android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_place"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,6 +56,7 @@
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:ellipsize="marquee"
+        android:focusable="true"
         android:maxLength="15"
         android:singleLine="true"
         android:text="@string/address"

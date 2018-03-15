@@ -1,6 +1,5 @@
 package com.kimjio.mealwear.school;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,21 +7,12 @@ import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.wear.widget.WearableLinearLayoutManager;
 import android.support.wear.widget.WearableRecyclerView;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.support.wearable.activity.WearableActivity;
 
 import com.kimjio.mealwear.R;
-import com.kimjio.mealwear.country.CountrySelectActivity;
-import com.kimjio.mealwear.list.SchoolSelectListActivity;
-import com.kimjio.mealwear.meal.MealActivity;
-import com.kimjio.mealwear.type.SchoolTypeActivity;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 //TODO Spinner
-public class SchoolSelectActivity extends Activity{
+public class SchoolSelectActivity extends WearableActivity {
 
     private WearableRecyclerView recyclerView;
     private SchoolRecyclerAdapter schoolRecyclerAdapter;
